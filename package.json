@@ -1,5 +1,5 @@
 {
-  "name": "@lepozepo/apollo-hooks",
+  "name": "apollo-hooks-refetch",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
