@@ -43,7 +43,8 @@
   },
   "dependencies": {},
   "peerDependencies": {
-    "react": "^16.8.6",
-    "react-apollo": "^2.5.8"
+    "apollo-client": "*",
+    "graphql": "*",
+    "react": "^16.8.0"
   }
 }
