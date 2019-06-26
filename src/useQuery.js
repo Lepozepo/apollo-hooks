@@ -1,3 +1,4 @@
+/* eslint-disable */
 import {
   useState,
   useEffect,
@@ -6,6 +7,8 @@ import {
 } from 'react';
 import { ApolloContext } from 'react-apollo';
 import { parser } from 'react-apollo/parser';
+/* eslint-enable */
+import isEqual from 'lodash/isEqual';
 
 function observableQueryFields(observable) {
   if (!observable) return {};
@@ -39,6 +42,7 @@ export default function useQuery(query, props = {}) {
 
   function setQueryResult(newState) {
     _setQueryResult({
+      ...observableQueryFields(Observable.current),
       ...queryResult,
       ...newState,
     });
@@ -46,45 +50,36 @@ export default function useQuery(query, props = {}) {
 
   useEffect(() => {
     if (!props.skip) {
-      if (!Observable.current) {
+      if (Observable.current) {
+        if (Subscription.current) Subscription.current.unsubscribe();
+
+        Subscription.current = Observable.current && Observable.current.subscribe({
+          next() {
+            const prevResult = queryResult;
+            const nextResult = Observable.current.getCurrentResult();
+            if (!isEqual(nextResult.data, prevResult.data)) setQueryResult(nextResult);
+          },
+          error(err) {
+            setQueryResult({
+              error: err,
+            });
+          },
+        });
+      } else {
         Observable.current = client.watchQuery({ query, ...props });
+        setQueryResult({
+          networkStatus: 1,
+          loading: true,
+          data: undefined,
+          error: undefined,
+        });
       }
-      setQueryResult({
-        ...observableQueryFields(Observable.current),
-        networkStatus: 1,
-        loading: true,
-        data: undefined,
-        error: undefined,
-      });
-    }
-  }, [props.skip]);
-
-  useEffect(() => {
-    if (!props.skip) {
-      if (Subscription.current) Subscription.current.unsubscribe();
-
-      Subscription.current = Observable.current && Observable.current.subscribe({
-        next({ loading, networkStatus, data } = {}) {
-          setQueryResult({
-            ...queryResult,
-            loading,
-            networkStatus,
-            data,
-          });
-        },
-        error(err) {
-          setQueryResult({
-            ...queryResult,
-            error: err,
-          });
-        },
-      });
     }
 
     return () => {
       if (Subscription.current) Subscription.current.unsubscribe();
     };
-  }, [props.skip]);
+  }, [props, query]);
 
   useEffect(() => {
     if (!Observable.current) return;
