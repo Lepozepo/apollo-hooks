@@ -1,5 +1,8 @@
 # React Apollo Hooks (with refetch support)
 
+## Install
+`npm i apollo-hooks-refetch`
+
 ## useQuery
 `QUERY_RESULT = useQuery(QUERY, QUERY_OPTIONS)`
 
