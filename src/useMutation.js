@@ -37,7 +37,7 @@ export default function useMutation(mutation, props) {
             ...mutationResult,
             loading: false,
             error: undefined,
-            data: res,
+            data: res.data,
           });
           runner.resolve(res);
         }
