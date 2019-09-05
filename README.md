@@ -1,4 +1,5 @@
 # React Apollo Hooks (with refetch support)
+**This package is deprecated, use the official [apollo/react-hooks](https://www.npmjs.com/package/@apollo/react-hooks) package instead. The interface is the same as this one with extended functionality**
 
 ## Install
 `npm i apollo-hooks-refetch`
